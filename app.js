@@ -41,7 +41,7 @@ app.post('/auth/register', async (req, res) => {
   const passwordHash = await bcrypt.hash(password, salt);
 
   // create user
-  const user = new User({ name, email, password });
+  const user = new User({ name, email, password: passwordHash });
 
   try {
     await user.save();
@@ -53,6 +53,11 @@ app.post('/auth/register', async (req, res) => {
       .status(500)
       .json({ msg: 'Erro no sevidor, tente novamente mais tarde!' });
   }
+});
+
+// login user
+app.post('/auth/login', async (req, res) => {
+  const { email, password } = req.body;
 });
 
 // credentials
