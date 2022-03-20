@@ -56,7 +56,7 @@ app.post('/auth/register', async (req, res) => {
 });
 
 // private route
-app.get('/user/:id', async (req, res) => {
+app.get('/user/:id', checkToken, async (req, res) => {
   const id = req.params.id;
 
   // check if user exists
@@ -66,6 +66,13 @@ app.get('/user/:id', async (req, res) => {
 
   res.status(200).json({ user });
 });
+
+function checkToken(req, res, next) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) res.status(401).json({ msg: 'Acesso negado!' });
+}
 
 // login user
 app.post('/auth/login', async (req, res) => {
