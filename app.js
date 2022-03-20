@@ -23,6 +23,19 @@ app.get('/', (req, res) => {
 app.post('/auth/register', async (req, res) => {
   const { name, email, password, confirmPassword } = req.body;
 
+  // validations
+  if (!name) return res.status(422).json({ msg: 'O nome é obrigatório!' });
+  if (!email) return res.status(422).json({ msg: 'O e-mail é obrigatório!' });
+  if (!password) return res.status(422).json({ msg: 'A senha é obrigatória!' });
+  if (password !== confirmPassword)
+    return res.status(422).json({ msg: 'As senhas não conferem!' });
+
+  // check if user exists
+  const userExists = await User.findOne({ email: email });
+
+  if (userExists)
+    return res.status(422).json({ msg: 'Por favor, utilize outro e-mail!' });
+
   res.status(200).json({ msg: 'Autenticado!' });
 });
 
