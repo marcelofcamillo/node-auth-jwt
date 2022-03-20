@@ -58,6 +58,20 @@ app.post('/auth/register', async (req, res) => {
 // login user
 app.post('/auth/login', async (req, res) => {
   const { email, password } = req.body;
+
+  // validations
+  if (!email) return res.status(422).json({ msg: 'O e-mail é obrigatório!' });
+  if (!password) return res.status(422).json({ msg: 'A senha é obrigatória!' });
+
+  // check if user exists
+  const user = await User.findOne({ email: email });
+
+  if (!user) return res.status(422).json({ msg: 'Usuário não encontrado!' });
+
+  // check if password match
+  const checkPassword = await bcrypt.compare(password, user.password);
+
+  if (!checkPassword) return res.status(422).json({ msg: 'Senha inválida!' });
 });
 
 // credentials
