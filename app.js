@@ -72,6 +72,18 @@ app.post('/auth/login', async (req, res) => {
   const checkPassword = await bcrypt.compare(password, user.password);
 
   if (!checkPassword) return res.status(422).json({ msg: 'Senha inválida!' });
+
+  try {
+    const secret = process.env.SECRET;
+    const token = jwt.sign({ id: user._id }, secret);
+
+    res.status(200).json({ msg: 'Autenticação realizada com sucesso', token });
+  } catch (error) {
+    console.log(error);
+    res
+      .status(500)
+      .json({ msg: 'Erro no sevidor, tente novamente mais tarde!' });
+  }
 });
 
 // credentials
