@@ -36,7 +36,23 @@ app.post('/auth/register', async (req, res) => {
   if (userExists)
     return res.status(422).json({ msg: 'Por favor, utilize outro e-mail!' });
 
-  res.status(200).json({ msg: 'Autenticado!' });
+  // create password
+  const salt = await bcrypt.genSalt(12);
+  const passwordHash = await bcrypt.hash(password, salt);
+
+  // create user
+  const user = new User({ name, email, password });
+
+  try {
+    await user.save();
+
+    res.status(201).json({ msg: 'Usuário criado com sucesso!' });
+  } catch (error) {
+    console.log(error);
+    res
+      .status(500)
+      .json({ msg: 'Erro no sevidor, tente novamente mais tarde!' });
+  }
 });
 
 // credentials
